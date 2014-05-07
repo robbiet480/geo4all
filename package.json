@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/MapJam/geo4all.git"
+    "url": "https://github.com/robbiet480/geo4all.git"
   },
   "keywords": [
     "geocoder",
@@ -19,9 +19,9 @@
   "author": "Robbie Trencheny <me@robbiet.us>",
   "license": "GPL",
   "bugs": {
-    "url": "https://github.com/MapJam/geo4all/issues"
+    "url": "https://github.com/robbiet480/geo4all/issues"
   },
-  "homepage": "https://github.com/MapJam/geo4all",
+  "homepage": "https://github.com/robbiet480/geo4all",
   "dependencies": {
     "request": "^2.34.0",
     "lodash": "^2.4.1",
