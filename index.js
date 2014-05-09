@@ -149,7 +149,6 @@ module.exports = {
         }
         requestOpts.urlBuilder.query = queryOpts;
         requestOpts.url = url.format(requestOpts.urlBuilder);
-        console.log('url',requestOpts.url);
         request.get(requestOpts, function(err,resp,body){
           if(!err && resp.statusCode == 200) {
             callback(null, _this.formatDirectionsResult(provider, body, requestOpts.url));
@@ -205,8 +204,8 @@ module.exports = {
           }, function(cb) {
             queryOpts.f = queryOpts.format;
             delete queryOpts.format;
-            if(!inputOpts.token) callback(new Error('You must provide a token!'));
-            queryOpts.token = inputOpts.token;
+            if(!inputOpts.query.token) callback(new Error('You must provide a token!'));
+            queryOpts.token = inputOpts.query.token;
             queryOpts.stops = JSON.stringify(queryOpts.stops);
             cb(null);
           }
@@ -307,7 +306,7 @@ module.exports = {
       case 'arcgis':
         var route = response.routes;
         var directions = response.directions[0];
-        console.log(util.inspect(response,{depth:null}));
+        if(!directions) return new Error('No results');
         replyObj.distance = directions.summary.totalLength.toFixed(2)+" mi";
         replyObj.duration = directions.summary.totalDriveTime.toFixed(2).split('.')[0]+" mins";
         replyObj.origin.geometry.coordinates = route.features[0].geometry.paths[0][0];
@@ -381,6 +380,7 @@ module.exports = {
     switch(provider) {
       case 'google':
         var resp = response.results[0];
+        if(!resp) return new Error('No results found');
         replyObj.address.precision = resp.types[0];
         replyObj.address.pretty = resp.formatted_address;
         replyObj.geometry.latitude = resp.geometry.location.lat;
@@ -424,6 +424,7 @@ module.exports = {
           // We have a geocode response
           // Lets return best match
           var location = response.locations[0];
+          if(!location) return new Error('No results found');
           replyObj.address.precision = location.feature.attributes.Addr_type;
           replyObj.address.pretty = location.name;
           replyObj.address.address = location.feature.attributes.AddNum+' '+location.feature.attributes.StName+' '+location.feature.attributes.StType;
