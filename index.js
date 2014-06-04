@@ -10,8 +10,16 @@ var countriesList = {"AFG":"Afghanistan","ALA":"Åland Islands","ALB":"Albania",
 
 module.exports = {
   getEsriToken: function(clientId, clientSecret, callback){
-    if(!clientId) callback(new Error('No clientId provided as first argument'));
-    if(!clientSecret) callback(new Error('No clientSecret provided as second argument'));
+    if(!clientId) {
+      var error = new Error();
+      error.message = 'No clientId provided as first argument';
+      callback(error);
+    }
+    if(!clientSecret) {
+      var error = new Error();
+      error.message = 'No clientSecret provided as second argument';
+      callback(error);
+    }
     // Get a token that expires in 14 days
     request.get({
       url: "https://www.arcgis.com/sharing/oauth2/token?client_id="+clientId+"&client_secret="+clientSecret+"&f=json&grant_type=client_credentials&expiration=20160",
@@ -497,6 +505,16 @@ module.exports = {
         break;
       case 'esri':
       case 'arcgis':
+        if(queryOpts.forStorage && !queryOpts.token) {
+          var error = new Error();
+          error.message = 'forStorage set, but no token given!';
+          return callback(error);
+        }
+        if(queryOpts.token && queryOpts.token === "") {
+          var error = new Error();
+          error.message = 'Token was given, but is null!';
+          return callback(error);
+        }
         requestOpts.urlBuilder.host = "geocode.arcgis.com:443";
         requestOpts.urlBuilder.pathname = "/arcgis/rest/services/World/GeocodeServer/";
         if(typeof input === "string" || input instanceof String) {
@@ -507,21 +525,32 @@ module.exports = {
           requestOpts.urlBuilder.pathname += "reverseGeocode/";
           queryOpts.location = input.reverse().join(',');
         } else {
-          var err = new Error('You didn\t provide a valid input. Valid inputs are string or array')
+          var err = new Error();
+          err.message = 'You didn\t provide a valid input. Valid inputs are string or array';
           callback(err);
         }
         queryOpts.f = queryOpts.format;
         delete queryOpts.format;
         break;
       default:
-        return new Error('No such provider');
+        var error = new Error();
+        error.message = 'No such provider';
+        callback(error);
         break;
     }
     requestOpts.urlBuilder.query = queryOpts;
     requestOpts.url = url.format(requestOpts.urlBuilder);
     request.get(requestOpts, function(err,resp,body){
       if(!err && resp.statusCode == 200) {
-        callback(null, _this.formatGeocodeResult(provider, body, requestOpts.url));
+        if(body.error) {
+          var error = new Error();
+          error.message = body.error.message;
+          error.code = body.error.code;
+          error.details = body.error.details;
+          return callback(error);
+        } else {
+          callback(null, _this.formatGeocodeResult(provider, body, requestOpts.url));
+        }
       } else {
         callback(err);
       }
