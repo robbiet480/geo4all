@@ -1,6 +1,6 @@
 {
   "name": "geo4all",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A geocoder that supports Google and Esri ArcGIS",
   "main": "index.js",
   "scripts": {
