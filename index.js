@@ -435,7 +435,7 @@ module.exports = {
           if(!location) return new Error('No results found');
           replyObj.address.precision = location.feature.attributes.Addr_type;
           replyObj.address.pretty = location.name;
-          replyObj.address.address = location.feature.attributes.AddNum+' '+location.feature.attributes.StName+' '+location.feature.attributes.StType;
+          replyObj.address.address = location.feature.attributes.Place_addr || location.feature.attributes.AddNum+' '+location.feature.attributes.StName+' '+location.feature.attributes.StType;
           replyObj.address.city = location.feature.attributes.City;
           replyObj.address.region = location.feature.attributes.Region;
           replyObj.address.country = countriesList[location.feature.attributes.Country];
