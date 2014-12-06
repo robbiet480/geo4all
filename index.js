@@ -448,13 +448,13 @@ module.exports = {
           replyObj.geometry.latitude = response.location.y;
           replyObj.geometry.longitude = response.location.x;
           var pieces = _.filter(response.address, function(val,key){
-            if((!_.isNull(val)) && (key != "Loc_name")) {
+            if((!_.isNull(val)) && (key != "Loc_name") && (key != "Match_addr")) {
               return val;
             }
           });
           replyObj.address.pretty = pieces.join(', ');
           _.forEach(response.address, function(val,key){
-            if((!_.isNull(val)) && (key != "Loc_name")) {
+            if((!_.isNull(val)) && (key != "Loc_name") && (key != "Match_addr")) {
               replyObj.address[key.charAt(0).toLowerCase() + key.slice(1)] = val;
             }
           });
